@@ -1,5 +1,6 @@
 <script>
     import BigSquare from "./BigSquare.svelte";
+    import {globalState as store} from "./stores.js";
 
     let bigSquares = [];
 
@@ -27,3 +28,9 @@
         {/each}
     {/each}
 </div>
+<button on:click="{() => {
+    store.solveSteps();
+    refresh();
+}}">solve some squres</button>
+
+<button on:click="{refresh}">Refresh</button>

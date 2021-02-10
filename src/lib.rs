@@ -85,4 +85,81 @@ impl Board {
         let y: Vec<u32> = x.iter().map(|&x| x as u32).collect();
         return Uint32Array::from(&y[..]);
     }
+
+    pub fn to_array(&self) -> Uint32Array {
+        let y: Vec<u32> = self.data.iter().map(|&x| x as u32).collect();
+        return Uint32Array::from(&y[..]);
+    }
+
+    pub fn set(&mut self, index: usize, val: u8) {
+        self.data[index] = val;
+    }
+
+    pub fn get(&self, index: usize) -> u8 {
+        self.data[index]
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Clone)]
+pub struct BoardSolving {
+    possible: [[bool; 10]; 81]
+}
+
+#[wasm_bindgen]
+impl BoardSolving {
+    pub fn new() -> BoardSolving {
+        return BoardSolving {
+            possible: [[true; 10]; 81]
+        }
+    }
+
+    pub fn set(&mut self, row: u8, column: u8, value: u8) -> bool {
+        if value==0 {
+            return true;
+        }
+        let idx = board_neighbours::to_index(row, column);
+        if self.possible[idx].into_iter().filter(|&x| *x).count() == 1 && !self.possible[idx][usize::from(value)] {
+            return false;
+        }
+        self.possible[idx] = [false;10];
+        self.possible[idx][usize::from(value)] = true;
+        for i in board_neighbours::neighbours(row, column) {
+            self.possible[i][usize::from(value)] = false;
+            let c = self.possible[i].into_iter().filter(|&x| *x).count();
+            if c==0 {
+                return false;
+            }
+            if c==2 && self.possible[i][9] {
+                self.possible[i][0] = false;
+                let p = self.possible[i].into_iter().position(|&x| x).unwrap();
+                if !self.set((i/9) as u8, (i%9) as u8, p as u8) {
+                    return false;
+                } 
+            }
+        }
+        return true;
+    }
+
+    pub fn to_board(&self) -> Board {
+        let mut data: Vec<u8> = vec![0; 81];
+        for i in 0..81 {
+            if self.possible[i].into_iter().filter(|&x| *x).count() == 1 {
+                data[i] = self.possible[i].into_iter().position(|&x| x).unwrap() as u8;
+            }
+        }
+
+        return Board{
+            data
+        };
+    }
+
+    pub fn from_board(b: Board) -> BoardSolving {
+        let mut bs = BoardSolving::new();
+        for i in 0..81 {
+            bs.set(i/9, i%9, b.get(i.into()));
+        }
+        return bs;
+    }
+
 }
