@@ -2,6 +2,8 @@ use wasm_bindgen::prelude::*;
 use web_sys::console;
 use js_sys::Uint32Array;
 
+mod board_neighbours;
+
 extern crate serde_json;
 
 extern crate web_sys;
@@ -65,42 +67,9 @@ impl Board {
     }
 
     pub fn validate_square(&self, row: u8, column: u8) -> bool {
-        let my_val = self.data[Board::to_index(row, column)];
-        if my_val==0 {
-            return true;
-        }
-        // validate same column
-        for i in 0..9 {
-            if i!=row {
-                if self.data[Board::to_index(i, column)]==my_val {
-                    return false;
-                }
-            }
-        }
-
-        // validate same row
-        for i in 0..9 {
-            if i!=column {
-                if self.data[Board::to_index(row, i)]==my_val {
-                    return false;
-                }
-            }
-        }
-
-        let upper_left_row: u8 = (row/3) * 3;
-        let upper_left_column: u8 = (column/3) * 3;
-        for i in 0..3 {
-            for j in 0..3 {
-                let row2 = upper_left_row + i;
-                let column2 = upper_left_column + j;
-                if row!=row2 || column != column2 {
-                    if self.data[Board::to_index(row2, column2)]==my_val {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        let idx = board_neighbours::to_index(row, column);
+        let val = self.data[idx];
+        return !board_neighbours::Neighbours::new(row, column).filter(|&x| x!= idx).any(|x| self.data[x]==val && self.data[x]!=0);
     }
 
     pub fn validate_all(&self) -> Uint32Array {
@@ -115,11 +84,5 @@ impl Board {
 
         let y: Vec<u32> = x.iter().map(|&x| x as u32).collect();
         return Uint32Array::from(&y[..]);
-    }
-
-    fn to_index(row: u8, column: u8) -> usize {
-        assert!(row<=9, "Row ({}) is out of range!", row);
-        assert!(column<=9, "Column ({}) is out of range!", column);
-        return usize::from(9*row + column);
     }
 }
