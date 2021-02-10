@@ -4,6 +4,14 @@
 
     import Square from "./Square.svelte";
     import {generateIndex} from "./utils.js";
+
+    let squares = [];
+
+    export function refresh() {
+        for (const sq of squares) {
+            sq.refresh();
+        }
+    }
 </script>
 
 <style>
@@ -17,7 +25,7 @@
 <div class="container">
     {#each [0,1,2] as rowSub}
         {#each [0,1,2] as columnSub}
-            <Square index="{generateIndex(rowBig, columnBig, rowSub, columnSub)}" />
+            <Square index="{generateIndex(rowBig, columnBig, rowSub, columnSub)}" bind:this="{squares[3*rowSub+columnSub]}"/>
         {/each}
     {/each}
 </div>

@@ -1,5 +1,13 @@
 <script>
     import BigSquare from "./BigSquare.svelte";
+
+    let bigSquares = [];
+
+    function refresh() {
+        for (const sq of bigSquares) {
+            sq.refresh();
+        }
+    }
 </script>
 
 <style>
@@ -15,7 +23,7 @@
 <div class="field-container">
     {#each [0,1,2] as rowBig}
         {#each [0,1,2] as columnBig}
-            <BigSquare {rowBig} {columnBig} />
+            <BigSquare {rowBig} {columnBig} bind:this="{bigSquares[3*rowBig+columnBig]}"/>
         {/each}
     {/each}
 </div>

@@ -5,10 +5,14 @@
 
     let value;
 
+    export function refresh() {
+        value = $store.squares[index] || "";
+    }
+
     function commit_value() {
         const setVal = parseInt(value) || (value=="" ? 0 : $store.squares[index]);
         store.setSquare(index, setVal);
-        value = $store.squares[index] || "";
+        refresh();
     }
 
     $: error = $store.problems.includes(index);
