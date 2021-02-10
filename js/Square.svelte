@@ -6,11 +6,9 @@
     let value;
 
     function commit_value() {
-        let newVal = parseInt(value) || 0;
-        if (newVal > 9 || newVal <=0) {
-            value = $store.squares[index] || "";
-        }
-        store.setSquare(index, value);
+        const setVal = parseInt(value) || (value=="" ? 0 : $store.squares[index]);
+        store.setSquare(index, setVal);
+        value = $store.squares[index] || "";
     }
 
     $: error = $store.problems.includes(index);
