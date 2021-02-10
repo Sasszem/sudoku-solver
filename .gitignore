@@ -10,3 +10,5 @@ yarn.lock
 /wasm-pack.log
 Cargo.lock
 *.wasm
+/.vscode
+public/build
