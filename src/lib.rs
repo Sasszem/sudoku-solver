@@ -69,7 +69,7 @@ impl Board {
     pub fn validate_square(&self, row: u8, column: u8) -> bool {
         let idx = board_neighbours::to_index(row, column);
         let val = self.data[idx];
-        return !board_neighbours::Neighbours::new(row, column).filter(|&x| x!= idx).any(|x| self.data[x]==val && self.data[x]!=0);
+        return !board_neighbours::neighbours(row, column).any(|x| self.data[x]==val && self.data[x]!=0);
     }
 
     pub fn validate_all(&self) -> Uint32Array {

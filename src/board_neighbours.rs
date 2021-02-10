@@ -4,7 +4,7 @@ pub fn to_index(row: u8, column: u8) -> usize {
     return usize::from(9*row + column);
 }
 
-pub struct Neighbours {
+struct Neighbours {
     row: u8,
     column: u8,
     current: u8 
@@ -49,4 +49,9 @@ impl Iterator for Neighbours {
             }
         }
     }
+}
+
+pub fn neighbours(row: u8, column: u8) -> impl Iterator<Item = usize>{
+    let idx = to_index(row, column);
+    return Neighbours::new(row, column).filter(move |&x| x!= idx);
 }
