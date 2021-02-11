@@ -100,52 +100,85 @@ impl Board {
     }
 }
 
+#[derive(Clone, Copy)]
+struct BoardSolvingEntry {
+    pub possible: [bool; 9],
+    pub finished: bool
+}
+
 #[wasm_bindgen]
-#[derive(Clone)]
 pub struct BoardSolving {
-    possible: [[bool; 10]; 81]
+    data: [BoardSolvingEntry; 81]
 }
 
 #[wasm_bindgen]
 impl BoardSolving {
     pub fn new() -> BoardSolving {
         return BoardSolving {
-            possible: [[true; 10]; 81]
+            data: [BoardSolvingEntry{possible: [true; 9], finished: false}; 81]
         }
     }
 
-    pub fn set(&mut self, row: u8, column: u8, value: u8) -> bool {
+    pub fn set(&mut self, row: u8, column: u8, value: u8) {
+        // 0 has a special meaning (unknown)
         if value==0 {
-            return true;
+            return;
         }
-        let idx = board_neighbours::to_index(row, column);
-        if self.possible[idx].into_iter().filter(|&x| *x).count() == 1 && !self.possible[idx][usize::from(value)] {
-            return false;
-        }
-        self.possible[idx] = [false;10];
-        self.possible[idx][usize::from(value)] = true;
+        
+        let index = board_neighbours::to_index(row, column);
+
+        // mark as finished
+        self.data[index].finished = true;
+        
+        // replace [true; 9] with [false; 9] and write one true
+        self.data[index].possible = [false; 9];
+        self.data[index].possible[usize::from(value-1)] = true;
+        
+        // update neightbors possibilities
+        // and set them if they can be only one possible value
         for i in board_neighbours::neighbours(row, column) {
-            self.possible[i][usize::from(value)] = false;
-            let c = self.possible[i].into_iter().filter(|&x| *x).count();
-            if c==0 {
-                return false;
-            }
-            if c==2 && self.possible[i][9] {
-                self.possible[i][0] = false;
-                let p = self.possible[i].into_iter().position(|&x| x).unwrap();
-                if !self.set((i/9) as u8, (i%9) as u8, p as u8) {
-                    return false;
-                } 
+            if !self.data[i].finished {
+                self.data[i].possible[usize::from(value-1)] = false;
+
+                let cnt = self.data[i].possible.into_iter().filter(|&x| *x).count();
+                if cnt==1 {
+                    let pos = self.data[i].possible.into_iter().position(|&x| x).unwrap() as u8;
+                    self.set((i/9) as u8, (i%9) as u8, pos + 1);
+                }
             }
         }
-        return true;
     }
 
+    // TODO: necessity solving
+    // i.e every row, column and big square needs all numbers
+    // so check every row, column and big square
+    // and check every numbers' possible positions
+    // and if there's only one
+    // set it
+
+    // Easy debug log function
+    // will remove later, but keep for now
+    // TODO: remove this
+    fn debug_dump(&self) {
+        for i in 0..3 {
+            for j in 0..3 {
+                let idx = board_neighbours::to_index(i, j);
+                log!("{}, {} (idx={})", i, j, idx);
+                log!("\tfinished = {}", self.data[idx].finished);
+                for k in 0..9 {
+                    log!("\t{} -> {}", k, self.data[idx].possible[k]);
+                }
+            }
+        }
+    }
+
+    // convert it into a Board so we can return it to JS
     pub fn to_board(&self) -> Board {
         let mut data: Vec<u8> = vec![0; 81];
+
         for i in 0..81 {
-            if self.possible[i].into_iter().filter(|&x| *x).count() == 1 {
-                data[i] = self.possible[i].into_iter().position(|&x| x).unwrap() as u8;
+            if self.data[i].possible.into_iter().filter(|&x| *x).count() == 1 {
+                data[i] = 1+self.data[i].possible.into_iter().position(|&x| x).unwrap() as u8;
             }
         }
 
@@ -154,6 +187,8 @@ impl BoardSolving {
         };
     }
 
+    // set up numbers from a Board
+    // so we can just create it easily from JS
     pub fn from_board(b: Board) -> BoardSolving {
         let mut bs = BoardSolving::new();
         for i in 0..81 {
@@ -161,5 +196,6 @@ impl BoardSolving {
         }
         return bs;
     }
-
 }
+
+// TODO: create wrappers around objects so we can just call *pure* functions from JS
