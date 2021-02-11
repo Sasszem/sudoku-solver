@@ -17,6 +17,11 @@
 
     $: error = $store.problems.includes(index);
 
+    // TODO: better input
+    // copy sudoku.om
+    // i.e. custom input element with keyboard events
+    // highlight connected elements maybe?
+    // also same numbers?
 </script>
 
 <style>

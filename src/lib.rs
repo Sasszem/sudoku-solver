@@ -9,6 +9,7 @@ extern crate serde_json;
 extern crate web_sys;
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
+// TODO: remove all logging (should shrink WASM size)
 macro_rules! log {
     ( $( $t:tt )* ) => {
         web_sys::console::log_1(&format!( $( $t )* ).into());
@@ -24,11 +25,6 @@ macro_rules! log {
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
-extern {
-    fn alert(s: &str);
-}
-
 // This is like the `main` function, except for JavaScript.
 #[wasm_bindgen(start)]
 pub fn main_js() -> Result<(), JsValue> {
@@ -36,17 +32,7 @@ pub fn main_js() -> Result<(), JsValue> {
     // It's disabled in release mode so it doesn't bloat up the file size.
     #[cfg(debug_assertions)]
     console_error_panic_hook::set_once();
-
-
-    // Your code goes here!
-    console::log_1(&JsValue::from_str("Hello world!"));
-
     Ok(())
-}
-
-#[wasm_bindgen]
-pub fn greet(s: &str) {
-    alert(&format!("Hello, {}!", s));
 }
 
 #[wasm_bindgen]
