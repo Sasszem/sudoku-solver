@@ -29,7 +29,6 @@
 </style>
 
 {#await import("../pkg/index.js").then(store.setWasm)}
-    {$store.wasm}
     <div class="loader-container">
         <p class="text">Loading, please wait...</p>
         <div class="spinner"></div>
