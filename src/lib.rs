@@ -173,17 +173,22 @@ impl BoardSolving {
         };
     }
 
+    fn check_only_possible(&mut self, val: u8, iter: impl Iterator<Item=usize>) {
+        let row : Vec<BoardSolvingEntry> = iter.map(|x| self.data[x]).collect();
+        if row.iter().filter(|x| x.finished).filter(|x| x.possible[usize::from(val)]).count()==1 {
+            return;
+        }
+        if row.iter().filter(|x| x.possible[usize::from(val)]).count()==1 {
+            self.set(0, row.iter().position(|x| x.possible[usize::from(val)]).unwrap() as u8, (val+1) as u8);
+        }
+    }
+
     pub fn solve_step(&mut self) {
-        use board_neighbours::to_index;
-        // iterate first row only for now
-        // TODO: extend for every row, column and square
         for i in 0..9 {
-            // check if already has a finalized field
-            if (0..9).map(|x| self.data[to_index(0, x)]).filter(|x| x.finished).filter(|x| x.possible[i]).count()==1 {
-                continue;
-            }
-            if (0..9).map(|x| self.data[to_index(0, x)]).filter(|x| x.possible[i]).count()==1 {
-                self.set(0, (0..9).map(|x| self.data[to_index(0, x)]).position(|x| x.possible[i]).unwrap() as u8, (i+1) as u8);
+            for r in 0..9 {
+                self.check_only_possible(i, board_neighbours::row_indexes(r));
+                self.check_only_possible(i, board_neighbours::column_indexes(r));
+                self.check_only_possible(i, board_neighbours::square_indexes(r/3, r%3));
             }
         }
     }
