@@ -25,7 +25,9 @@ function createStore() {
         ),
         solveSteps: () => update(
             old => {
-                const squares = Array.from(old.wasm.BoardSolving.from_board(old.wasm.Board.new(old.squares)).to_board().to_array());
+                const solving = old.wasm.BoardSolving.from_board(old.wasm.Board.new(old.squares));
+                solving.solve_step();
+                const squares = Array.from(solving.to_board().to_array());
                 return {...old, squares};
             }
         ),

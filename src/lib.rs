@@ -173,6 +173,21 @@ impl BoardSolving {
         };
     }
 
+    pub fn solve_step(&mut self) {
+        use board_neighbours::to_index;
+        // iterate first row only for now
+        // TODO: extend for every row, column and square
+        for i in 0..9 {
+            // check if already has a finalized field
+            if (0..9).map(|x| self.data[to_index(0, x)]).filter(|x| x.finished).filter(|x| x.possible[i]).count()==1 {
+                continue;
+            }
+            if (0..9).map(|x| self.data[to_index(0, x)]).filter(|x| x.possible[i]).count()==1 {
+                self.set(0, (0..9).map(|x| self.data[to_index(0, x)]).position(|x| x.possible[i]).unwrap() as u8, (i+1) as u8);
+            }
+        }
+    }
+
     // set up numbers from a Board
     // so we can just create it easily from JS
     pub fn from_board(b: Board) -> BoardSolving {
