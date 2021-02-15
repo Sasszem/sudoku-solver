@@ -1,12 +1,14 @@
 <script>
-	export let name;
 	import Loader from "./Loader.svelte";
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<h1>Sudoku solver</h1>
+	<p>Enter the puzzle down bellow. When finished, click the <span>solve some squares</span> button!</p>
 	<Loader />
+	<p>
+		Made by <a href="https://sasszem.github.io">László Baráth (2021)</a>
+	</p>
 </main>
 
 <style>
@@ -22,11 +24,22 @@
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
+	p {
+		margin-top: 0;
+		margin-bottom: 0;
 	}
 
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
 		}
+	}
+
+	span {
+		text-transform: uppercase;
 	}
 </style>

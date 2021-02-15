@@ -19,6 +19,14 @@
         margin: auto;
         border: 2px solid black;
     }
+
+    button {
+        text-transform: capitalize;
+        font-size: 20px;
+        font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        margin: 10px;
+        color: darkorchid;
+    }
 </style>
 
 <div class="field-container">
@@ -32,5 +40,3 @@
     store.solveSteps();
     refresh();
 }}">solve some squres</button>
-
-<button on:click="{refresh}">Refresh</button>
