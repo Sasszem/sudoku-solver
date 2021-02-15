@@ -15,20 +15,23 @@ function createStore() {
                 const squares = old.squares.map(
                     (oldVal, idx) => (idx==index? parseInt(value) || 0 : oldVal)
                 )
-                const problems = old.wasm.Board.new(squares).validate_all();
-                return {...old, squares, problems};
+                old.wasm.set(index, parseInt(value)||0);
+                old.wasm.validate();
+                const problems = Array.from({length: 81}, (_, id) => old.wasm.get_error(id));
+                return {...old, problems, squares};
             }),
         setWasm: (wasm) => update(
             old => {
+                wasm.clear();
                 return {...old, wasm};
             }
         ),
         solveSteps: () => update(
             old => {
-                const solving = old.wasm.BoardSolving.from_board(old.wasm.Board.new(old.squares));
-                solving.solve_step();
-                const squares = Array.from(solving.to_board().to_array());
-                return {...old, squares};
+                old.wasm.solve_step();
+                const problems = Array.from({length: 81}, (_, id) => old.wasm.get_error(id));
+                const squares = Array.from({length: 81}, (_, id) => old.wasm.get(id));
+                return {...old, squares, problems};
             }
         ),
     };

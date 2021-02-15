@@ -12,10 +12,11 @@
     function commit_value() {
         const setVal = parseInt(value) || (value=="" ? 0 : $store.squares[index]);
         store.setSquare(index, setVal);
+        console.log($store.problems);
         refresh();
     }
 
-    $: error = $store.problems.includes(index);
+    $: error = $store.problems[index];
 
     // TODO: better input
     // copy sudoku.om
