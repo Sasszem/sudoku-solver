@@ -15,13 +15,6 @@ impl Board {
         }
     }
 
-    pub fn from_array(data: [u8; 81]) -> Board {
-        return Board{
-            data,
-            problems: [false; 81]
-        }
-    }
-
     pub fn validate_square(&self, row: u8, column: u8) -> bool {
         let idx = to_index(row, column);
         let val = self.data[idx];

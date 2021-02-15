@@ -1,4 +1,3 @@
-use crate::board_neighbours::to_index;
 use crate::board::Board;
 
 #[derive(Clone, Copy)]
@@ -24,7 +23,7 @@ impl BoardSolving {
             return;
         }
         
-        let index = to_index(row, column);
+        let index = crate::board_neighbours::to_index(row, column);
 
         // mark as finished
         self.data[index].finished = true;

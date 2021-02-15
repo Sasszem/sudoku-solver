@@ -4,7 +4,7 @@ mod board_neighbours;
 mod board;
 mod board_solving;
 
-use board_neighbours::to_index;
+
 // When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
 // allocator.
 //
@@ -21,48 +21,48 @@ pub fn main_js() -> Result<(), JsValue> {
     Ok(())
 }
 
-static mut board: board::Board = board::Board::new();
+static mut BOARD: board::Board = board::Board::new();
 
 #[wasm_bindgen]
 pub fn clear() {
     unsafe {
-        board.clear();
+        BOARD.clear();
     }
 }
 
 #[wasm_bindgen]
 pub fn set(idx: u8, val: u8) {
     unsafe {
-        board.set(usize::from(idx), val);
+        BOARD.set(usize::from(idx), val);
     }
 }
 
 #[wasm_bindgen]
 pub fn get(idx: u8) -> u8 {
     unsafe {
-        return board.get(usize::from(idx));
+        return BOARD.get(usize::from(idx));
     }
 }
 
 #[wasm_bindgen]
 pub fn validate() {
     unsafe {
-        board.validate_all();
+        BOARD.validate_all();
     }
 }
 
 #[wasm_bindgen]
 pub fn get_error(idx: u8) -> bool {
     unsafe {
-        return board.get_error(usize::from(idx));
+        return BOARD.get_error(usize::from(idx));
     }
 }
 
 #[wasm_bindgen]
 pub fn solve_step() {
     unsafe {
-        let mut bs = board_solving::BoardSolving::from_board(&board);
+        let mut bs = board_solving::BoardSolving::from_board(&BOARD);
         bs.solve_step();
-        bs.write_board(&mut board);
+        bs.write_board(&mut BOARD);
     }
 }
