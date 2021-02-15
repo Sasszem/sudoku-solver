@@ -61,12 +61,25 @@ impl BoardSolving {
     }
 
     fn check_only_possible(&mut self, val: u8, iter: impl Iterator<Item=usize>) {
-        let row : Vec<BoardSolvingEntry> = iter.map(|x| self.data[x]).collect();
-        if row.iter().filter(|x| x.finished).filter(|x| x.possible[usize::from(val)]).count()==1 {
+        // collect iterator and map into array
+        // w/o any dynamic allocation
+        let mut indexes: [usize; 9] = [0;9];
+        let mut entries: [BoardSolvingEntry; 9] = [BoardSolvingEntry{finished: false, possible:[true; 9]};9];
+        let mut p = 0;
+        for i in iter {
+            indexes[p] = i;
+            entries[p] = self.data[i];
+            p = p+1;
+        }
+
+        // skip if we already have that number
+        if entries.iter().filter(|x| x.finished).filter(|x| x.possible[usize::from(val)]).count()==1 {
             return;
         }
-        if row.iter().filter(|x| x.possible[usize::from(val)]).count()==1 {
-            self.set(0, row.iter().position(|x| x.possible[usize::from(val)]).unwrap() as u8, (val+1) as u8);
+        // if there's only one possiblilty, write it
+        if entries.iter().filter(|x| x.possible[usize::from(val)]).count()==1 {
+            let pos = entries.iter().position(|x| x.possible[usize::from(val)]).unwrap();
+            self.set((indexes[pos]/9) as u8, (indexes[pos]%9) as u8, (val+1) as u8);
         }
     }
 
