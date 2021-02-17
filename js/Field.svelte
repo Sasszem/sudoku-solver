@@ -16,6 +16,7 @@
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         width: fit-content;
+        width: -moz-fit-content;
         margin: auto;
         border: 2px solid black;
     }
