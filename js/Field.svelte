@@ -40,4 +40,4 @@
 <button on:click="{() => {
     store.solveSteps();
     refresh();
-}}">solve some squres</button>
+}}">solve some squares</button>

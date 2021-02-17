@@ -4,7 +4,7 @@
 
 <main>
 	<h1>Sudoku solver</h1>
-	<p>Enter the puzzle down bellow. When finished, click the <span>solve some squares</span> button!</p>
+	<p>Enter the puzzle down below. When finished, click the <span>solve some squares</span> button!</p>
 	<Loader />
 	<p>
 		Made by <a href="https://sasszem.github.io">László Baráth (2021)</a>
